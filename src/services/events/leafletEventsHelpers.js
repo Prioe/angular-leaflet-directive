@@ -1,20 +1,19 @@
 angular.module('leaflet-directive')
-.factory('LeafletEventsHelpersFactory', function($rootScope, $q, $log, leafletHelpers) {
+.factory('LeafletEventsHelpersFactory', function ($rootScope, $q, $log, leafletHelpers) {
   var safeApply = leafletHelpers.safeApply;
   var isDefined = leafletHelpers.isDefined;
   var isObject = leafletHelpers.isObject;
   var isArray = leafletHelpers.isArray;
   var errorHeader = leafletHelpers.errorHeader;
 
-  var EventsHelper = function(rootBroadcastName, lObjectType) {
+  var EventsHelper = function (rootBroadcastName, lObjectType) {
     this.rootBroadcastName = rootBroadcastName;
-    $log.debug('LeafletEventsHelpersFactory: lObjectType: ' + lObjectType + 'rootBroadcastName: ' + rootBroadcastName);
 
     //used to path/key out certain properties based on the type , "markers", "geojson"
     this.lObjectType = lObjectType;
   };
 
-  EventsHelper.prototype.getAvailableEvents = function() {return [];};
+  EventsHelper.prototype.getAvailableEvents = function () {return [];};
 
   /*
    argument: name: Note this can be a single string or dot notation
@@ -34,23 +33,22 @@ angular.module('leaflet-directive')
    //would yield name of
    name = "cars.m1"
    */
-  EventsHelper.prototype.genDispatchEvent = function(maybeMapId, eventName, logic, leafletScope, lObject, name, model, layerName, extra) {
+  EventsHelper.prototype.genDispatchEvent = function (maybeMapId, eventName, logic, leafletScope, lObject, name, model, layerName, extra) {
     var _this = this;
 
     maybeMapId = maybeMapId || '';
     if (maybeMapId)
       maybeMapId = '.' + maybeMapId;
 
-    return function(e) {
+    return function (e) {
       var broadcastName = _this.rootBroadcastName + maybeMapId + '.' + eventName;
-      $log.debug(broadcastName);
       _this.fire(leafletScope, broadcastName, logic, e, e.target || lObject, model, name, layerName, extra);
     };
   };
 
-  EventsHelper.prototype.fire = function(scope, broadcastName, logic, event, lObject, model, modelName, layerName) {
+  EventsHelper.prototype.fire = function (scope, broadcastName, logic, event, lObject, model, modelName, layerName) {
     // Safely broadcast the event
-    safeApply(scope, function() {
+    safeApply(scope, function () {
       var toSend = {
         leafletEvent: event,
         leafletObject: lObject,
@@ -58,7 +56,7 @@ angular.module('leaflet-directive')
         model: model,
       };
       if (isDefined(layerName))
-          angular.extend(toSend, {layerName: layerName});
+          angular.extend(toSend, { layerName: layerName });
 
       if (logic === 'emit') {
         scope.$emit(broadcastName, toSend);
@@ -68,7 +66,7 @@ angular.module('leaflet-directive')
     });
   };
 
-  EventsHelper.prototype.bindEvents = function(maybeMapId, lObject, name, model, leafletScope, layerName, extra) {
+  EventsHelper.prototype.bindEvents = function (maybeMapId, lObject, name, model, leafletScope, layerName, extra) {
     var events = [];
     var logic = 'emit';
     var _this = this;
@@ -117,7 +115,7 @@ angular.module('leaflet-directive')
           // At this point the object is OK, lets enable or disable events
           if (eventsEnable) {
             // Enable events
-            leafletScope.eventBroadcast[this.lObjectType].enable.forEach(function(eventName) {
+            leafletScope.eventBroadcast[this.lObjectType].enable.forEach(function (eventName) {
               // Do we have already the event enabled?
               if (events.indexOf(eventName) !== -1) {
                 // Repeated event, this is an error
@@ -136,7 +134,7 @@ angular.module('leaflet-directive')
           } else {
             // Disable events
             events = this.getAvailableEvents();
-            leafletScope.eventBroadcast[_this.lObjectType].disable.forEach(function(eventName) {
+            leafletScope.eventBroadcast[_this.lObjectType].disable.forEach(function (eventName) {
               var index = events.indexOf(eventName);
               if (index === -1) {
                 // The event does not exist
@@ -151,7 +149,7 @@ angular.module('leaflet-directive')
       }
     }
 
-    events.forEach(function(eventName) {
+    events.forEach(function (eventName) {
       lObject.on(eventName, _this.genDispatchEvent(maybeMapId, eventName, logic, leafletScope, lObject, name, model, layerName, extra));
     });
 
@@ -160,6 +158,6 @@ angular.module('leaflet-directive')
 
   return EventsHelper;
 })
-.service('leafletEventsHelpers', function(LeafletEventsHelpersFactory) {
+.service('leafletEventsHelpers', function (LeafletEventsHelpersFactory) {
   return new LeafletEventsHelpersFactory();
 });
