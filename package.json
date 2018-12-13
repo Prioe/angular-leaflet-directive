@@ -1,7 +1,7 @@
 {
   "author": "https://github.com/tombatossals/angular-leaflet-directive/graphs/contributors",
-  "name": "angular-leaflet-directive",
-  "version": "0.10.1",
+  "name": "@babelbing/angular-leaflet-directive",
+  "version": "0.10.3",
   "description": "angular-leaflet-directive - An AngularJS directive to easily interact with Leaflet maps",
   "homepage": "http://tombatossals.github.io/angular-leaflet-directive/",
   "repository": {
@@ -56,7 +56,7 @@
   },
   "main": "dist/angular-leaflet-directive",
   "dependencies": {
-    "angular": "1.x",
-    "@babelbing/leaflet": "^1.3.1"
+    "@babelbing/leaflet": "^1.3.1",
+    "angular": "1.x"
   }
 }
